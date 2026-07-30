@@ -5,7 +5,6 @@
 CourtLab is a tablet-first, offline-capable PWA that helps coaches and staff
 record, correct, and analyse statistics for five-on-five basketball games.
 
-**Public demo:** [basketcoach.duckdns.org](https://basketcoach.duckdns.org)
 
 > The demo contains test data. Before using CourtLab in an official game, run a
 > complete simulated game on the device that will be used courtside.

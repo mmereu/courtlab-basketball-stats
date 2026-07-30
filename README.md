@@ -6,7 +6,6 @@ CourtLab è una web app PWA, pensata prima di tutto per tablet e utilizzabile
 anche offline, con cui coach e staff possono rilevare, correggere e analizzare
 le statistiche di una partita di pallacanestro 5 contro 5.
 
-**Demo pubblica:** [basketcoach.duckdns.org](https://basketcoach.duckdns.org)
 
 > La demo contiene dati di prova. Prima di usare CourtLab in una partita
 > ufficiale è consigliato simulare una gara completa sul dispositivo che verrà
