@@ -223,3 +223,9 @@ CourtLab è in sviluppo attivo. È già utilizzabile per simulazioni e collaudi,
 ma ogni rilascio destinato a una partita ufficiale deve essere provato
 preventivamente sul dispositivo reale, prestando particolare attenzione a
 offline, ripristino, esportazioni e sincronizzazione tra dispositivi.
+
+## Licenza
+
+CourtLab è software open source distribuito con
+[licenza MIT](LICENSE). È consentito usarlo, copiarlo, modificarlo e
+ridistribuirlo nel rispetto delle condizioni indicate nella licenza.
