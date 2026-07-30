@@ -446,19 +446,29 @@ input { width: 100%; margin-top: 7px; padding: 15px 14px; border-radius: 10px; b
 .report-score strong { font-size: 72px; line-height: 1.1; }
 .report-score > span { font-size: 34px; color: #657169; padding-bottom: 8px; }
 .report-hero > p:last-child { color: var(--muted); font-size: 12px; margin: 10px 0 0; }
-.report-content { max-width: 1100px; margin: auto; padding: 50px 35px; }
+.report-content { max-width: 1600px; margin: auto; padding: 50px 35px; }
 .report-title { display: flex; justify-content: space-between; align-items: end; margin-bottom: 25px; }
 .report-title h1 { font-size: 38px; letter-spacing: -2px; margin: 0; }
 .boxscore-wrap { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #141a17; }
 .boxscore-scroll { width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-gutter: stable; }
+.boxscore-hint { display: none; margin: 0; padding: 9px 12px; border-bottom: 1px solid #27302b; color: #a9b6ae; font-size: 10px; }
 .boxscore { width: 100%; border-collapse: collapse; font-size: 12px; }
 .boxscore th, .boxscore td { text-align: right; padding: 12px 14px; border-bottom: 1px solid #27302b; }
 .boxscore th:first-child, .boxscore td:first-child { text-align: left; }
 .boxscore thead { color: #829087; font-size: 9px; letter-spacing: 1px; }
 .boxscore tbody tr:hover { background: #19211d; }
 .boxscore tfoot { color: var(--accent-2); font-weight: 700; background: #1d241f; }
-.boxscore-full { min-width: 1480px; }
-.boxscore-full th, .boxscore-full td { padding: 11px 10px; white-space: nowrap; }
+.boxscore-full { min-width: 1280px; }
+.boxscore-full th, .boxscore-full td { padding: 11px 7px; white-space: nowrap; }
+.boxscore-full th:first-child, .boxscore-full td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 132px;
+  background: #141a17;
+}
+.boxscore-full thead th:first-child { z-index: 2; }
+.boxscore-full tfoot td:first-child { background: #1d241f; }
 .boxscore .value-cell { color: var(--accent-2); font-weight: 800; }
 .boxscore .positive-cell { color: #64d299; font-weight: 800; }
 .boxscore .negative-cell { color: #ee8466; font-weight: 800; }
@@ -564,6 +574,7 @@ input { width: 100%; margin-top: 7px; padding: 15px 14px; border-radius: 10px; b
   .report-title { align-items: start; gap: 20px; }
   .report-title .primary-button { min-width: 0; }
   .boxscore-wrap { overflow-x: auto; }
+  .boxscore-hint { display: block; position: sticky; left: 0; }
   .boxscore { min-width: 720px; }
 }
 
