@@ -216,3 +216,9 @@ CourtLab is under active development. It can already be used for simulations
 and testing, but every release intended for an official game should first be
 tested on the actual device, with particular attention to offline operation,
 recovery, exports, and cross-device synchronisation.
+
+## License
+
+CourtLab is open-source software released under the
+[MIT License](LICENSE). You may use, copy, modify, and redistribute it under
+the terms stated in the license.
