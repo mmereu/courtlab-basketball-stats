@@ -83,6 +83,7 @@ export default function BoxScore({
 
   return (
     <div className="boxscore-wrap">
+      <p className="boxscore-hint">Tabella completa · scorri orizzontalmente per vedere tutte le statistiche →</p>
       <div className="boxscore-scroll" role="region" aria-label="Box score completo" tabIndex={0}>
         <table className="boxscore boxscore-full">
         <thead>
