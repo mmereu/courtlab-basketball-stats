@@ -128,19 +128,19 @@ again after closing or refreshing the page.
 CourtLab is offline-first: working data is stored locally in the browser through
 IndexedDB, so an internet connection is not required during the game.
 
-Cloud synchronisation is deliberately explicit:
+Cloud synchronisation is automatic and protected:
 
-1. on the device containing the latest changes, choose **Create new cloud
-   version**;
-2. on every other device, choose **Download cloud copy**;
-3. if the cloud version changed in the meantime, CourtLab blocks the overwrite
-   and reports a conflict;
-4. previous revisions can be reviewed and restored.
+1. every change is saved on the device first;
+2. when a connection is available, it is sent to the server automatically;
+3. other devices automatically check for and download newer versions;
+4. while offline, changes remain queued until the connection returns;
+5. if two devices make parallel changes from different versions, CourtLab
+   blocks the overwrite and asks which copy should be kept;
+6. previous revisions can always be reviewed and restored.
 
-You do not need to download the cloud copy after every change on the same
-device. You do need to download it before continuing on another phone, tablet,
-or computer. Until automatic merging is available, avoid editing the same game
-on two devices at the same time.
+The interface clearly displays `Synced`, `Synchronising…`, `Offline`, or
+`Conflict`. Normal operation no longer requires manual uploads or downloads.
+Manual choices appear only when resolving a genuine conflict.
 
 Synchronisation is not a replacement for a proper backup policy. The production
 server keeps periodic database backups, but important games should also be

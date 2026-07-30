@@ -144,23 +144,18 @@ browser richiede di selezionare nuovamente lo stesso file video.
 
 ## Conservazione locale e sincronizzazione protetta
 
-Squadre, roster e partite vengono conservati localmente in IndexedDB.
-L’accesso cloud non carica e non scarica automaticamente alcun archivio.
+Squadre, roster e partite vengono conservati localmente in IndexedDB. Quando
+l’utente ha effettuato l’accesso, CourtLab sincronizza automaticamente dopo ogni
+salvataggio e controlla le nuove versioni cloud anche sugli altri dispositivi.
+Offline, il lavoro continua localmente e resta in coda fino al ritorno della
+connessione.
 
-Operazioni disponibili:
-
-- **Crea nuova versione cloud**: carica esplicitamente lo stato locale dopo
-  conferma;
-- **Scarica la copia cloud**: sostituisce esplicitamente lo stato locale dopo
-  conferma;
-- **Cronologia e ripristino**: mostra revisioni immutabili e permette di
-  recuperarne una.
-
-Il server usa versionamento ottimistico: se un altro dispositivo ha creato una
-versione più recente, un upload basato su una versione vecchia viene bloccato.
-La procedura operativa è caricare dal dispositivo che ha effettuato la modifica
-e poi scaricare sugli altri dispositivi. Le modifiche parallele non vengono
-ancora unite automaticamente.
+Il server usa versionamento ottimistico: se due dispositivi modificano partendo
+da versioni diverse, la sovrascrittura viene bloccata. L’interfaccia mostra un
+conflitto e permette di scegliere esplicitamente i dati del dispositivo oppure
+la versione cloud. Le revisioni immutabili restano consultabili e
+ripristinabili. Nel normale utilizzo non sono più necessari pulsanti manuali di
+caricamento o scaricamento.
 
 Il VPS esegue backup SQLite giornalieri. I servizi applicativi sono gestiti da
 systemd e ripartono automaticamente dopo un riavvio.

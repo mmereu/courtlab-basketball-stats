@@ -327,6 +327,8 @@ input { width: 100%; margin-top: 7px; padding: 15px 14px; border-radius: 10px; b
 .cloud-account { position: fixed; z-index: 100; right: 18px; bottom: 18px; font-family: Inter, system-ui, sans-serif; }
 .cloud-trigger { min-height: 43px; padding: 0 15px; display: flex; gap: 8px; align-items: center; border: 1px solid #35433b; border-radius: 99px; background: #15211b; color: #fff; box-shadow: 0 10px 30px #0004; font-weight: 750; cursor: pointer; }
 .cloud-trigger.connected span { color: #69d99c; }
+.cloud-trigger.status-offline span { color: #f0c46a; }
+.cloud-trigger.status-conflict span, .cloud-trigger.status-error span { color: #ff8273; }
 .cloud-popover { position: absolute; right: 0; bottom: 52px; width: min(360px, calc(100vw - 32px)); padding: 20px; display: grid; gap: 10px; border: 1px solid #34423a; border-radius: 15px; background: #15211b; color: #fff; box-shadow: 0 18px 50px #0008; }
 .cloud-popover h2 { margin: 0 0 6px; font-size: 21px; line-height: 1.15; }
 .cloud-popover p { margin: 0; color: #aebbb4; font-size: 12px; line-height: 1.4; }
