@@ -12,6 +12,20 @@ le statistiche di una partita di pallacanestro 5 contro 5.
 > ufficiale è consigliato simulare una gara completa sul dispositivo che verrà
 > utilizzato a bordo campo.
 
+## Anteprima
+
+### Società e più squadre
+
+![Gestione delle categorie di Novara Basket](docs/images/teams-desktop.png)
+
+### Rilevazione live e correzione degli eventi
+
+![Foglio coach durante una partita](docs/images/live-tracking-desktop.png)
+
+### Box score, Game Flow, shot chart e analisi video
+
+![Report completo della partita](docs/images/report-desktop.png)
+
 ## A chi serve
 
 CourtLab nasce per società italiane giovanili e dilettantistiche che vogliono

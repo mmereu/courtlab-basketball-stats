@@ -10,6 +10,20 @@ record, correct, and analyse statistics for five-on-five basketball games.
 > The demo contains test data. Before using CourtLab in an official game, run a
 > complete simulated game on the device that will be used courtside.
 
+## Preview
+
+### Organisation and multiple teams
+
+![Managing Novara Basket teams](docs/images/teams-desktop.png)
+
+### Live tracking and event correction
+
+![Coach sheet during a game](docs/images/live-tracking-desktop.png)
+
+### Box score, Game Flow, shot chart, and video analysis
+
+![Complete game report](docs/images/report-desktop.png)
+
 ## Who it is for
 
 CourtLab was designed for youth and amateur basketball organisations that want
