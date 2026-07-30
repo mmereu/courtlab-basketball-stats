@@ -133,19 +133,21 @@ CourtLab è offline-first: i dati di lavoro vengono salvati localmente nel
 browser tramite IndexedDB. La connessione non è quindi necessaria durante la
 partita.
 
-La sincronizzazione cloud è intenzionalmente esplicita:
+La sincronizzazione cloud è automatica e protetta:
 
-1. sul dispositivo che contiene le modifiche più recenti usa **Crea nuova
-   versione cloud**;
-2. sugli altri dispositivi usa **Scarica copia cloud**;
-3. se la versione cloud è cambiata nel frattempo, CourtLab blocca la
-   sovrascrittura e segnala il conflitto;
-4. le revisioni precedenti possono essere consultate e ripristinate.
+1. ogni modifica viene prima salvata sul dispositivo;
+2. se c'è connessione, viene inviata automaticamente al server;
+3. gli altri dispositivi controllano e scaricano le nuove versioni
+   automaticamente;
+4. offline, le modifiche restano in coda e partono al ritorno della rete;
+5. se due dispositivi modificano in parallelo partendo da versioni diverse,
+   CourtLab blocca la sovrascrittura e chiede quale copia conservare;
+6. le revisioni precedenti possono sempre essere consultate e ripristinate.
 
-Non è necessario scaricare la copia cloud dopo ogni modifica sullo stesso
-dispositivo. Serve invece prima di continuare il lavoro da un altro telefono,
-tablet o computer. Finché non sarà disponibile una fusione automatica, evitare
-di modificare contemporaneamente la stessa partita da due dispositivi.
+Lo stato mostra chiaramente `Sincronizzato`, `Sincronizzazione…`, `Offline` o
+`Conflitto`. Non occorre più caricare o scaricare manualmente i dati nel normale
+utilizzo. Le scelte manuali compaiono soltanto come procedura di risoluzione di
+un conflitto.
 
 La sincronizzazione non sostituisce una corretta politica di backup. Il server
 di produzione conserva backup periodici del database, ma per gare importanti è

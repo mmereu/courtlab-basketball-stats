@@ -1,5 +1,6 @@
 import { FormEvent, useMemo, useState } from "react";
 import { calculateStats, type GameState, type Player } from "../domain";
+import type { CloudSyncStatus } from "../autoSync";
 import "./workspace-dashboard.css";
 
 export type TeamProfile = {
@@ -43,6 +44,7 @@ export type WorkspaceDashboardProps = {
   onRemovePlayer?: (teamId: string, playerId: string) => void;
   onDeleteTeam?: (teamId: string) => void;
   readOnly?: boolean;
+  syncStatus?: CloudSyncStatus;
 };
 
 const statusLabel = { draft: "Bozza", live: "In corso", final: "Terminata" };
@@ -393,6 +395,14 @@ export default function WorkspaceDashboard(props: WorkspaceDashboardProps) {
     return <EmptyWorkspace onCreate={props.onCreateTeam} />;
   }
   const games = props.games.filter((game) => game.teamId === selected.id);
+  const syncLabel = {
+    local: "Salvato sul dispositivo",
+    syncing: "Sincronizzazione…",
+    synced: "Sincronizzato",
+    offline: "Offline · in attesa",
+    conflict: "Conflitto cloud",
+    error: "Errore cloud",
+  }[props.syncStatus ?? "local"];
 
   return (
     <main className="ws-shell">
@@ -406,7 +416,9 @@ export default function WorkspaceDashboard(props: WorkspaceDashboardProps) {
           </select>
         </label>
         {!props.readOnly && <button className="ws-add-team" onClick={() => setShowNewTeam(true)}>＋ Categoria</button>}
-        <span className="ws-sync" aria-label="Dati salvati sul dispositivo">● Salvato sul dispositivo</span>
+        <span className={`ws-sync status-${props.syncStatus ?? "local"}`} aria-label={syncLabel}>
+          ● {syncLabel}
+        </span>
       </header>
       {showNewTeam && <NewTeamDialog
         source={selected}

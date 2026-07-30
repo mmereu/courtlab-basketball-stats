@@ -3,13 +3,15 @@ import {
   createCloudInvitation, listCloudMembers, removeCloudMember, updateCloudMember,
   type CloudMember, type CloudRevision, type CloudUser,
 } from "../cloud";
+import type { CloudSyncStatus } from "../autoSync";
 
 export default function CloudAccount({
-  user, syncing, lastSync, error, onLogin, onRegister, onAcceptInvite,
+  user, syncing, status, lastSync, error, onLogin, onRegister, onAcceptInvite,
   onLogout, onUpload, onDownload, onListRevisions, onRestoreRevision, onDeleteAccount,
 }: {
   user?: CloudUser;
   syncing: boolean;
+  status: CloudSyncStatus;
   lastSync?: number;
   error?: string;
   onLogin: (email: string, password: string) => Promise<void>;
@@ -46,11 +48,20 @@ export default function CloudAccount({
     setManage(true);
   };
 
+  const statusLabel = {
+    local: "Salvato sul dispositivo",
+    syncing: "Sincronizzazione…",
+    synced: "Sincronizzato",
+    offline: "Offline · sincronizzazione in attesa",
+    conflict: "Conflitto da risolvere",
+    error: "Sincronizzazione non riuscita",
+  }[status];
+
   return (
     <aside className="cloud-account">
-      <button className={`cloud-trigger ${user ? "connected" : ""}`} onClick={() => setOpen(!open)}>
-        <span>{syncing ? "↻" : user ? "●" : "○"}</span>
-        {user ? user.displayName || user.email : "Account e cloud"}
+      <button className={`cloud-trigger ${user ? "connected" : ""} status-${status}`} onClick={() => setOpen(!open)}>
+        <span>{syncing ? "↻" : status === "conflict" || status === "error" ? "!" : user ? "●" : "○"}</span>
+        {user ? statusLabel : "Account e cloud"}
       </button>
       {open && (
         <div className="cloud-popover">
@@ -110,17 +121,21 @@ export default function CloudAccount({
               <p className="cloud-kicker">CONNESSO · {user.role.toUpperCase()}</p>
               <strong>{user.displayName}</strong>
               <small>{user.email}</small>
-              <p>{lastSync ? `Ultima sincronizzazione ${new Date(lastSync).toLocaleTimeString("it-IT")}` : "Pronto per la prima sincronizzazione"}</p>
-              {error && <p className="cloud-error">{error}</p>}
-              <p><strong>Sincronizzazione protetta</strong><br />
-                <small>Nessun dispositivo sostituisce automaticamente i dati.</small>
+              <p><strong>{statusLabel}</strong><br />
+                <small>{lastSync ? `Ultimo aggiornamento ${new Date(lastSync).toLocaleTimeString("it-IT")}` : "La prima sincronizzazione partirà automaticamente."}</small>
               </p>
-              <button className="cloud-primary" disabled={syncing || user.role === "viewer"} onClick={() => void onUpload()}>
-                {syncing ? "Operazione in corso…" : "Crea nuova versione cloud"}
-              </button>
-              <button className="cloud-quiet" disabled={syncing} onClick={() => void onDownload()}>
-                Scarica la copia cloud
-              </button>
+              {error && <p className="cloud-error">{error}</p>}
+              <p><strong>Sincronizzazione automatica protetta</strong><br />
+                <small>Le modifiche vengono inviate appena c’è connessione. CourtLab blocca le sovrascritture se due dispositivi cambiano gli stessi dati in parallelo.</small>
+              </p>
+              {status === "conflict" && <>
+                <button className="cloud-primary" disabled={syncing || user.role === "viewer"} onClick={() => void onUpload()}>
+                  Usa i dati di questo dispositivo
+                </button>
+                <button className="cloud-quiet" disabled={syncing} onClick={() => void onDownload()}>
+                  Usa la versione cloud
+                </button>
+              </>}
               <button className="cloud-quiet" disabled={syncing} onClick={async () => {
                 setRevisions(await onListRevisions());
               }}>Cronologia e ripristino</button>
