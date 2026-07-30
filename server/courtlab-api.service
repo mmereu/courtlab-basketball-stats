@@ -1,0 +1,21 @@
+[Unit]
+Description=CourtLab Cloud API
+After=network.target
+
+[Service]
+Type=simple
+User=courtlab
+Group=courtlab
+WorkingDirectory=/opt/courtlab/server
+EnvironmentFile=/etc/courtlab/api.env
+ExecStart=/usr/bin/python3 /opt/courtlab/server/app.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/courtlab
+
+[Install]
+WantedBy=multi-user.target
