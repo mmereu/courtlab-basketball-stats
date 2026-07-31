@@ -8,6 +8,8 @@ le statistiche di una partita di pallacanestro 5 contro 5.
 
 **Applicazione di produzione:** [basketcoach.duckdns.org](https://basketcoach.duckdns.org)
 
+**Programma coach tester:** [Diventa tester di CourtLab](https://basketcoach.duckdns.org/#/diventa-tester)
+
 ## Anteprima
 
 ### Società e più squadre
