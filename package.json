@@ -9,6 +9,7 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "qa": "node scripts/qa-release-a.mjs",
+    "qa:tester": "node scripts/qa-tester-landing.mjs",
     "qa:video": "node scripts/qa-video.mjs",
     "preview": "vite preview"
   },

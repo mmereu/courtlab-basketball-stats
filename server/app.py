@@ -65,6 +65,7 @@ class Config:
     token_ttl: int = 8 * 60 * 60
     allow_registration: bool = False
     allowed_origin: str = "https://basketcoach.duckdns.org"
+    tester_admin_email: str = ""
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -79,6 +80,7 @@ class Config:
             allowed_origin=os.environ.get(
                 "COURTLAB_ALLOWED_ORIGIN", "https://basketcoach.duckdns.org"
             ),
+            tester_admin_email=os.environ.get("COURTLAB_TESTER_ADMIN_EMAIL", "").strip().lower(),
         )
 
 
@@ -138,6 +140,22 @@ class CourtLabService:
                 );
                 CREATE INDEX IF NOT EXISTS invitations_workspace_idx
                   ON invitations(workspace_id);
+                CREATE TABLE IF NOT EXISTS tester_applications (
+                  id TEXT PRIMARY KEY,
+                  name TEXT NOT NULL,
+                  email TEXT NOT NULL,
+                  phone TEXT NOT NULL DEFAULT '',
+                  organization TEXT NOT NULL,
+                  category TEXT NOT NULL,
+                  role TEXT NOT NULL,
+                  device TEXT NOT NULL,
+                  message TEXT NOT NULL DEFAULT '',
+                  status TEXT NOT NULL DEFAULT 'new'
+                    CHECK(status IN ('new','contacted','accepted','closed')),
+                  created_at INTEGER NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS tester_applications_created_idx
+                  ON tester_applications(created_at DESC);
                 """
             )
             # Preserve the pre-upgrade state as the first immutable recovery point.
@@ -299,6 +317,70 @@ class CourtLabService:
     def require_owner(self, claims: dict[str, Any]) -> None:
         if claims["role"] != "owner":
             raise ApiError(403, "OWNER_REQUIRED", "Owner permission required")
+
+    @staticmethod
+    def _clean_field(value: Any, maximum: int) -> str:
+        text = str(value or "").strip()
+        if len(text) > maximum:
+            raise ApiError(400, "INVALID_REQUEST", "One or more fields are too long")
+        return text
+
+    def create_tester_application(self, data: dict[str, Any]) -> dict[str, Any]:
+        name = self._clean_field(data.get("name"), 100)
+        email = self._clean_field(data.get("email"), 160).lower()
+        phone = self._clean_field(data.get("phone"), 40)
+        organization = self._clean_field(data.get("organization"), 140)
+        category = self._clean_field(data.get("category"), 100)
+        role = self._clean_field(data.get("role"), 60)
+        device = self._clean_field(data.get("device"), 80)
+        message = self._clean_field(data.get("message"), 1200)
+        if not all((name, email, organization, category, role, device)):
+            raise ApiError(400, "INVALID_REQUEST", "Complete all required fields")
+        if not EMAIL_RE.match(email):
+            raise ApiError(400, "INVALID_EMAIL", "Enter a valid email address")
+        if data.get("consent") is not True:
+            raise ApiError(400, "CONSENT_REQUIRED", "Consent is required")
+        now = int(time.time())
+        with self.connect() as db:
+            recent = db.execute(
+                """SELECT 1 FROM tester_applications
+                   WHERE email=? AND created_at>? LIMIT 1""",
+                (email, now - 24 * 60 * 60),
+            ).fetchone()
+            if recent:
+                return {"received": True}
+            application_id = secrets.token_hex(16)
+            db.execute(
+                """INSERT INTO tester_applications
+                   (id,name,email,phone,organization,category,role,device,message,status,created_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,'new',?)""",
+                (application_id, name, email, phone, organization, category,
+                 role, device, message, now),
+            )
+        return {"received": True}
+
+    def list_tester_applications(self, claims: dict[str, Any]) -> dict[str, Any]:
+        self.require_owner(claims)
+        if not self.config.tester_admin_email:
+            raise ApiError(403, "ADMIN_REQUIRED", "Tester administration is not configured")
+        user = self.me(claims)
+        if user["email"].lower() != self.config.tester_admin_email:
+            raise ApiError(403, "ADMIN_REQUIRED", "Tester administrator permission required")
+        with self.connect() as db:
+            rows = db.execute(
+                """SELECT id,name,email,phone,organization,category,role,device,
+                          message,status,created_at
+                   FROM tester_applications ORDER BY created_at DESC LIMIT 500"""
+            ).fetchall()
+        return {"applications": [
+            {
+                "id": row["id"], "name": row["name"], "email": row["email"],
+                "phone": row["phone"], "organization": row["organization"],
+                "category": row["category"], "role": row["role"],
+                "device": row["device"], "message": row["message"],
+                "status": row["status"], "createdAt": row["created_at"],
+            } for row in rows
+        ]}
 
     def list_members(self, claims: dict[str, Any]) -> dict[str, Any]:
         self.require_owner(claims)
@@ -490,6 +572,14 @@ class Handler(BaseHTTPRequestHandler):
         path = self.path.split("?", 1)[0]
         if self.command == "GET" and path == "/api/health":
             return 200, {"ok": True}
+        if path == "/api/tester-applications":
+            if self.command == "POST":
+                body = self.read_json()
+                if str(body.get("website", "")).strip():
+                    return 201, {"received": True}
+                return 201, self.service.create_tester_application(body)
+            if self.command == "GET":
+                return 200, self.service.list_tester_applications(self.claims())
         if self.command == "POST" and path == "/api/register":
             body = self.read_json()
             return 201, self.service.register(

@@ -76,6 +76,41 @@ class CourtLabServiceTest(unittest.TestCase):
             self.service.put_snapshot(claims, 0, {"stale": True})
         self.assertEqual("VERSION_CONFLICT", context.exception.code)
 
+    def test_tester_application_is_validated_deduplicated_and_admin_only(self):
+        application = {
+            "name": "Coach Test", "email": "tester@example.test",
+            "phone": "+39 300 0000000", "organization": "Basket Test",
+            "category": "Under 15", "role": "Allenatore", "device": "Tablet",
+            "message": "Vorrei provare lo scouting live.", "consent": True,
+        }
+        self.assertEqual({"received": True}, self.service.create_tester_application(application))
+        self.assertEqual({"received": True}, self.service.create_tester_application(application))
+        with self.service.connect() as db:
+            count = db.execute("SELECT COUNT(*) count FROM tester_applications").fetchone()["count"]
+        self.assertEqual(1, count)
+
+        _, claims = self.register()
+        with self.assertRaises(ApiError) as context:
+            self.service.list_tester_applications(claims)
+        self.assertEqual("ADMIN_REQUIRED", context.exception.code)
+
+        self.service.config = Config(
+            database=self.service.config.database,
+            token_secret=self.service.config.token_secret,
+            token_ttl=self.service.config.token_ttl,
+            allow_registration=True,
+            allowed_origin=self.service.config.allowed_origin,
+            tester_admin_email="coach@example.test",
+        )
+        applications = self.service.list_tester_applications(claims)["applications"]
+        self.assertEqual("Basket Test", applications[0]["organization"])
+        self.assertEqual("new", applications[0]["status"])
+
+        invalid = {**application, "email": "not-an-email"}
+        with self.assertRaises(ApiError) as context:
+            self.service.create_tester_application(invalid)
+        self.assertEqual("INVALID_EMAIL", context.exception.code)
+
     def test_snapshot_revisions_are_immutable_and_restorable(self):
         _, claims = self.register()
         self.service.put_snapshot(claims, 0, {"teams": [{"id": "novara"}], "games": []})

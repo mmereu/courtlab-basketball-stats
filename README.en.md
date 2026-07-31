@@ -7,6 +7,8 @@ record, correct, and analyse statistics for five-on-five basketball games.
 
 **Production application:** [basketcoach.duckdns.org](https://basketcoach.duckdns.org)
 
+**Coach testing programme:** [Become a CourtLab tester](https://basketcoach.duckdns.org/#/diventa-tester)
+
 ## Preview
 
 ### Organisation and multiple teams
