@@ -15,6 +15,9 @@ describe("tester landing page", () => {
     render(<TesterLanding />);
 
     expect(screen.getByRole("heading", { name: /Prova CourtLab/i })).toBeTruthy();
+    expect(screen.getByText(/CourtLab è un’app open source/i)).toBeTruthy();
+    expect(screen.getByRole("link", { name: /Esplora il progetto su GitHub/i }).getAttribute("href"))
+      .toBe("https://github.com/mmereu/courtlab-basketball-stats");
     fireEvent.change(screen.getByLabelText("Nome e cognome"), { target: { value: "Coach Test" } });
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "coach@example.test" } });
     fireEvent.change(screen.getByLabelText("Società"), { target: { value: "Basket Test" } });

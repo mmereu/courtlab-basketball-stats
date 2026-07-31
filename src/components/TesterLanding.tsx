@@ -56,12 +56,12 @@ export default function TesterLanding() {
 
       <header className="tester-hero">
         <div className="tester-hero-copy">
-          <p className="tester-kicker">PROGRAMMA COACH TESTER</p>
+          <p className="tester-kicker">APP OPEN SOURCE · LICENZA MIT</p>
           <h1>Prova CourtLab.<br /><em>Miglioralo con noi.</em></h1>
           <p className="tester-lead">
-            Cerchiamo allenatori e staff di pallacanestro disponibili a usare
-            CourtLab durante partite reali e a raccontarci cosa funziona,
-            cosa rallenta e cosa manca.
+            CourtLab è un’app open source per il basket. Cerchiamo allenatori e
+            staff disponibili a usarla durante partite reali e a raccontarci
+            cosa funziona, cosa rallenta e cosa manca.
           </p>
           <div className="tester-hero-actions">
             <a className="tester-primary" href="#candidatura">Diventa tester</a>
@@ -89,6 +89,24 @@ export default function TesterLanding() {
         <article><strong>02</strong><span>Statistiche individuali<br />e di squadra</span></article>
         <article><strong>03</strong><span>Report PDF<br />ed Excel</span></article>
         <article><strong>04</strong><span>PC, tablet<br />e cellulare</span></article>
+      </section>
+
+      <section className="tester-open-source">
+        <div>
+          <p className="tester-kicker">CODICE PUBBLICO, SVILUPPO TRASPARENTE</p>
+          <h2>Open source significa che CourtLab può crescere con la comunità.</h2>
+        </div>
+        <div>
+          <p>
+            Il codice sorgente è pubblico su GitHub e distribuito con licenza
+            MIT. Chiunque può studiarlo, verificarlo, proporre miglioramenti o
+            adattarlo nel rispetto della licenza. I dati reali delle società e
+            degli atleti non fanno parte del repository pubblico.
+          </p>
+          <a href="https://github.com/mmereu/courtlab-basketball-stats" target="_blank" rel="noreferrer">
+            Esplora il progetto su GitHub →
+          </a>
+        </div>
       </section>
 
       <section className="tester-program" id="come-funziona">
