@@ -9,6 +9,10 @@ const columns = [
   "RT", "RO", "RD", "PP", "PR", "AS", "STF", "STS", "FS", "FC", "CPF", "CPS", "VAL",
 ];
 
+export const periodColumns = [
+  "Periodo", "PT", "PT avversario", "2P", "3P", "TL", "RT", "PR", "PP", "AS", "CPF", "CPS", "VAL",
+];
+
 function fileBase(state: GameState) {
   const date = new Date().toISOString().slice(0, 10);
   const teams = `${state.teamName}-${state.opponentName}`
@@ -82,7 +86,7 @@ function playerRows(state: GameState) {
     statRow(`#${row.player.number} ${row.player.name}`, row, 0, row.secondsPlayed, row.plusMinus));
 }
 
-function periodRows(state: GameState) {
+export function periodRows(state: GameState) {
   const maxPeriod = Math.max(4, state.period, ...state.events.map((event) => event.period));
   const periods = Array.from({ length: maxPeriod }, (_, index) => index + 1);
   const groups = [
@@ -107,8 +111,8 @@ function periodRows(state: GameState) {
       `${own.ftm}/${own.fta}`,
       own.oreb + own.dreb,
       own.stl,
-      own.ast,
       own.tov,
+      own.ast,
       own.fastBreakPoints,
       opponent.fastBreakPoints,
       own.pir,
@@ -174,7 +178,7 @@ export async function exportGamePdf(state: GameState) {
   doc.text("STATISTICHE PER QUARTO", 14, 16);
   autoTable(doc, {
     startY: 23,
-    head: [["Periodo", "PT", "PT avv.", "2P", "3P", "TL", "R", "PR", "AS", "PP", "CPF", "CPS", "VAL"]],
+    head: [periodColumns],
     body: periodRows(state),
     styles: { fontSize: 9, cellPadding: 3, halign: "center" },
     headStyles: { fillColor: [31, 40, 35], textColor: [255, 255, 255] },
@@ -271,7 +275,6 @@ export async function exportGameExcel(state: GameState) {
   configure(eventsSheet, [10, 12, 22, 28, 34, 10, 14, 12, 12, 20]);
 
   const periodsSheet = workbook.addWorksheet("Per quarto");
-  const periodColumns = ["Periodo", "PT", "PT avversario", "2P", "3P", "TL", "R", "PR", "AS", "PP", "CPF", "CPS", "VAL"];
   decorate(periodsSheet, `${state.teamName} · STATISTICHE PER QUARTO`, periodColumns.length);
   periodsSheet.addRow([]);
   const periodsHeader = periodsSheet.addRow(periodColumns);

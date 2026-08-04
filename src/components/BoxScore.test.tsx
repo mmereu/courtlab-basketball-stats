@@ -24,4 +24,13 @@ describe("full report box score", () => {
     expect(within(table).getAllByText("18")).toHaveLength(2);
     expect(within(table).getByText("TOTALE")).toBeTruthy();
   });
+
+  it("highlights total rebounds below the table", () => {
+    const { container } = render(<BoxScore stats={stats} />);
+
+    const rebounds = container.querySelector(".rebounds-total") as HTMLElement;
+    expect(rebounds).toBeTruthy();
+    expect(within(rebounds).getByText("RIMBALZI TOTALI")).toBeTruthy();
+    expect(within(rebounds).getByText("3")).toBeTruthy();
+  });
 });

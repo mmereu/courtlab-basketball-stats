@@ -108,6 +108,7 @@ export default function BoxScore({
         </table>
       </div>
       <div className="four-factors">
+        <div className="rebounds-total"><small>RIMBALZI TOTALI</small><strong>{totals.oreb + totals.dreb}</strong></div>
         <div><small>2P%</small><strong>{pct(totals.twoPm, totals.twoPa)}</strong></div>
         <div><small>3P%</small><strong>{pct(totals.threePm, totals.threePa)}</strong></div>
         <div><small>TL%</small><strong>{pct(totals.ftm, totals.fta)}</strong></div>

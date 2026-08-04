@@ -13,10 +13,11 @@ import {
   type CloudSnapshot, type CloudUser,
 } from "./cloud";
 import {
-  clearSyncMetadata, decideSync, loadSyncMetadata, saveSyncMetadata,
+  clearSyncMetadata, decideSync, loadSyncMetadata, mergeSnapshots, saveSyncMetadata,
   snapshotIsEmpty, snapshotsEqual, type CloudSyncStatus,
 } from "./autoSync";
 import { initialState, opponentScoreTotal, teamScore, type GameState, type Player } from "./domain";
+import { statusAfterSave } from "./gameArchiveStatus";
 import {
   IndexedDbArchiveRepository,
   migrateLegacyGame,
@@ -129,7 +130,8 @@ export default function App() {
     }
     window.clearTimeout(saveTimer.current);
     saveTimer.current = window.setTimeout(async () => {
-      const status = state.screen === "report" ? "completed" : state.screen === "live" ? "live" : "draft";
+      const archived = await repository.getGame(activeGameId);
+      const status = statusAfterSave(archived?.status, state.screen);
       await repository.updateGame(activeGameId, {
         opponentName: state.opponentName,
         status,
@@ -260,12 +262,13 @@ export default function App() {
       const decision = user.role === "viewer"
         ? remote.version > metadata.version ? "download" : "idle"
         : decideSync(metadata, remote.version, Boolean(remote.payload));
-      if (decision === "conflict") {
-        setCloudStatus("conflict");
-        setCloudError("Modifiche presenti su due dispositivi. Scegli quale versione conservare: nessun dato è stato sovrascritto.");
-        return;
-      }
-      if (decision === "download" && remote.payload) {
+      if (decision === "conflict" && remote.payload && user.role !== "viewer") {
+        const merged = mergeSnapshots(local, remote.payload);
+        const saved = await saveCloudSnapshot(merged, remote.version);
+        await restoreSnapshot(merged);
+        setTrackedCloudVersion(saved.version);
+        persistCloudMetadata(false);
+      } else if (decision === "download" && remote.payload) {
         await restoreSnapshot(remote.payload);
         setTrackedCloudVersion(remote.version);
         persistCloudMetadata(false);
@@ -317,11 +320,18 @@ export default function App() {
       setTrackedCloudVersion(remote.version);
       persistCloudMetadata(false);
       setCloudStatus("synced");
+    } else if (user.role === "viewer") {
+      await restoreSnapshot(remote.payload);
+      setTrackedCloudVersion(remote.version);
+      persistCloudMetadata(false);
+      setCloudStatus("synced");
     } else {
-      setTrackedCloudVersion(0);
-      persistCloudMetadata(true);
-      setCloudStatus("conflict");
-      setCloudError("Questo dispositivo e il cloud contengono dati diversi. Scegli una versione una sola volta; poi la sincronizzazione sarà automatica.");
+      const merged = mergeSnapshots(local, remote.payload);
+      const saved = await saveCloudSnapshot(merged, remote.version);
+      await restoreSnapshot(merged);
+      setTrackedCloudVersion(saved.version);
+      persistCloudMetadata(false);
+      setCloudStatus("synced");
     }
   };
 
@@ -557,9 +567,10 @@ export default function App() {
   const goHome = async () => {
     window.clearTimeout(saveTimer.current);
     if (repository && activeGameId) {
+      const archived = await repository.getGame(activeGameId);
       await repository.updateGame(activeGameId, {
         opponentName: state.opponentName,
-        status: state.screen === "report" ? "completed" : state.screen === "live" ? "live" : "draft",
+        status: statusAfterSave(archived?.status, state.screen),
         state: { ...state, running: false },
       });
       markCloudDirty();
