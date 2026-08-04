@@ -31,6 +31,32 @@ export function snapshotsEqual(left: CloudSnapshot, right: CloudSnapshot) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+/**
+ * Conservatively joins two independently edited devices. New teams and games
+ * are kept from both sides; the newest copy wins only when the same id exists.
+ */
+export function mergeSnapshots(local: CloudSnapshot, remote: CloudSnapshot): CloudSnapshot {
+  const mergeById = <T extends { id: string; createdAt: number; updatedAt: number }>(left: T[], right: T[]) => {
+    const values = new Map<string, T>();
+    for (const item of [...right, ...left]) {
+      const current = values.get(item.id);
+      if (!current || item.updatedAt >= current.updatedAt) values.set(item.id, item);
+    }
+    return [...values.values()].sort((a, b) => a.createdAt - b.createdAt);
+  };
+  const teams = mergeById(local.teams, remote.teams);
+  const games = mergeById(local.games, remote.games);
+  const localTeams = new Map(local.teams.map((team) => [team.id, team]));
+  const remoteTeams = new Map(remote.teams.map((team) => [team.id, team]));
+  const rosters = Object.fromEntries(teams.map((team) => {
+    const localTeam = localTeams.get(team.id);
+    const remoteTeam = remoteTeams.get(team.id);
+    const useLocal = localTeam && (!remoteTeam || localTeam.updatedAt >= remoteTeam.updatedAt);
+    return [team.id, structuredClone((useLocal ? local.rosters : remote.rosters)[team.id] ?? [])];
+  }));
+  return { teams: structuredClone(teams), games: structuredClone(games), rosters };
+}
+
 export function decideSync(
   metadata: SyncMetadata,
   remoteVersion: number,

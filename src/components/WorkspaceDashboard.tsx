@@ -272,7 +272,7 @@ type SeasonPlayerLine = {
 };
 
 function SeasonStats({ team, games }: { team: TeamProfile; games: ArchivedGame[] }) {
-  const [range, setRange] = useState<"all" | "5" | "10">("all");
+  const [range, setRange] = useState("all");
   const [query, setQuery] = useState("");
   const completed = useMemo(() => games
     .filter((game) => game.status === "final" && game.state)
@@ -333,8 +333,9 @@ function SeasonStats({ team, games }: { team: TeamProfile; games: ArchivedGame[]
         <label>Periodo
           <select value={range} onChange={(event) => setRange(event.target.value as typeof range)}>
             <option value="all">Tutta la stagione</option>
-            <option value="5">Ultime 5 partite</option>
-            <option value="10">Ultime 10 partite</option>
+            {Array.from({ length: 9 }, (_, index) => index + 2).map((count) => (
+              <option key={count} value={count}>Ultime {count} partite</option>
+            ))}
           </select>
         </label>
       </div>

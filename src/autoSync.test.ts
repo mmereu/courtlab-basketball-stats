@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decideSync, snapshotIsEmpty, snapshotsEqual } from "./autoSync";
+import { decideSync, mergeSnapshots, snapshotIsEmpty, snapshotsEqual } from "./autoSync";
 import type { CloudSnapshot } from "./cloud";
 
 const empty: CloudSnapshot = { teams: [], games: [], rosters: {} };
@@ -27,5 +27,17 @@ describe("automatic cloud synchronisation", () => {
         createdAt: 1, updatedAt: 1,
       }],
     })).toBe(false);
+  });
+
+  it("unisce le partite create su dispositivi diversi senza perderne una", () => {
+    const team = { id: "u15", name: "U15", color: "#fff", season: "2026", createdAt: 1, updatedAt: 1 };
+    const game = (id: string, updatedAt: number) => ({
+      id, teamId: team.id, opponentName: id, scheduledAt: 1, status: "draft" as const,
+      state: {} as CloudSnapshot["games"][number]["state"], createdAt: updatedAt, updatedAt,
+    });
+    const local = { teams: [team], rosters: { u15: [] }, games: [game("pc", 2)] };
+    const remote = { teams: [team], rosters: { u15: [] }, games: [game("cell", 3)] };
+
+    expect(mergeSnapshots(local, remote).games.map((item) => item.id)).toEqual(["pc", "cell"]);
   });
 });

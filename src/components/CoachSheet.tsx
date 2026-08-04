@@ -160,6 +160,7 @@ export default function CoachSheet({ state, patch, addEvent }: Props) {
       </div>
       <div className="transition-kpis">
         <span>Palle rubate squadra <strong>{team.stl}</strong></span>
+        <span>PP · Palle perse squadra <strong>{team.tov}</strong></span>
         <span>CPF · Contropiede fatto <strong>{team.fastBreakPoints}</strong></span>
         <span>CPS · Contropiede subito <strong>{opponent.fastBreakPoints}</strong></span>
       </div>
